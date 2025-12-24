@@ -1,32 +1,14 @@
-use std::fs::{self};
-use std::os::macos::raw::stat;
+use std::fs::{self, File};
 use std::time::Instant;
-use std::io::BufReader;
-use std::io::BufRead;
-use std::fs::File;
 use std::collections::HashMap;
 use std::collections::BTreeSet;
+use std::io::{self, BufRead, BufReader};
+use std::path::Path;
 
 fn main() {
-    // Attempt #1
-    // read_file_standard();
-
-    // Attempt #2
     read_file_with_buffer().expect("Failed to read file");
 }
 
-#[allow(dead_code)]
-fn read_file_standard() {
-    let start = Instant::now();
-
-    let _contents = fs::read_to_string("./measurements.txt");
-
-    let duration = start.elapsed();
-
-    println!("Time elapsed in the operation is: {:?}", duration);
-}
-
-#[allow(dead_code)]
 fn read_file_with_buffer() -> std::io::Result<()> {
     let start = Instant::now();
 
@@ -40,20 +22,25 @@ fn read_file_with_buffer() -> std::io::Result<()> {
 
     // List for sorting later
     let mut sorted_stations: BTreeSet<String> = BTreeSet::new();
-    let mut x = 0;
+
+    // Variables
+    let mut l: String;
+    let mut station_name: &str;
+    let mut temp: f64;
+    // let mut x = 0;
 
     // For each line, capture the station and the temp, store them in the map
     for line in reader.lines() {
-        if x == 100000 {
-            break;
-        }
-        x += 1;
+        // if x == 100000 {
+        //     break;
+        // }
+        // x += 1;
 
-        let l = line?;
-        let parts: Vec<&str> = l.split(';').collect();
+        l = line?;
+        let mut parts = l.split(';');
         
-        let station_name = parts[0];
-        let temp: f64 = parts[1].parse::<f64>().unwrap();
+        station_name = parts.next().unwrap();
+        temp = parts.next().unwrap().parse::<f64>().unwrap();
 
         sorted_stations.insert(station_name.to_string());
 
