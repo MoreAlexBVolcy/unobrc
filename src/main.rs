@@ -1,7 +1,6 @@
 use std::fs::{File};
 use std::time::Instant;
 use std::collections::HashMap;
-use std::collections::BTreeSet;
 use std::io::{BufRead, BufReader};
 
 fn main() {
@@ -19,7 +18,7 @@ fn read_file_with_buffer() -> std::io::Result<()> {
     let mut stations = HashMap::new();
 
     // List for sorting later
-    let mut sorted_stations: BTreeSet<String> = BTreeSet::new();
+    let mut sorted_stations: Vec<String> = Vec::new();
 
     // Variables
     let mut station_name: &str;
@@ -46,9 +45,6 @@ fn read_file_with_buffer() -> std::io::Result<()> {
                 let mut parts = line.split(';');
                 station_name = parts.next().unwrap();
                 temp = parts.next().unwrap().trim().parse::<f64>().unwrap();
-
-                sorted_stations.insert(station_name.to_string());
-                
                 
                 let station_info = stations.entry(String::from(station_name)).or_insert((temp, temp, temp, 1.0));
 
@@ -75,6 +71,12 @@ fn read_file_with_buffer() -> std::io::Result<()> {
         }
 
     }
+
+    for (key, _) in stations.iter() {
+        sorted_stations.push(key.to_string());
+    }
+
+    sorted_stations.sort();
 
     for key in &sorted_stations {
         let station_info = stations[key];
